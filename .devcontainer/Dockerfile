@@ -2,8 +2,8 @@ FROM osrf/ros:humble-desktop
 
 ARG DEBIAN_FRONTEND=noninteractive
 
-ARG USER_UID=1001
-ARG USER_GID=1001
+ARG USER_UID=1000
+ARG USER_GID=1000
 ARG USERNAME=user
 
 WORKDIR /workspaces
@@ -23,32 +23,38 @@ RUN groupadd --gid $USER_GID $USERNAME \
 
 ENV SHELL /bin/bash
 
+
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-    ros-humble-hardware-interface \
-    ros-humble-generate-parameter-library \
-    ros-humble-xacro \
-    ros-humble-controller-interface \
-    ros-humble-realtime-tools \
-    ros-humble-ros2-control-test-assets \
-    ros-humble-controller-manager \
-    ros-humble-joint-state-publisher-gui \
-    ros-humble-control-msgs \
-    ros-humble-geometry-msgs \
-    ros-humble-sensor-msgs \
-    ros-humble-gazebo-ros \
-    ros-humble-control-toolbox \
-    ros-humble-ackermann-msgs \
-    ros-humble-ament-cmake \
-    ros-humble-ament-cmake-clang-format \
-    ros-humble-moveit \
-    ros-humble-ros2-control \
-    ros-humble-ros2-controllers \
-    ros-humble-joint-state-broadcaster \
-    ros-humble-ament-cmake-clang-tidy \
+    ros-${ROS_DISTRO}-hardware-interface \
+    ros-${ROS_DISTRO}-generate-parameter-library \
+    ros-${ROS_DISTRO}-xacro \
+    ros-${ROS_DISTRO}-controller-interface \
+    ros-${ROS_DISTRO}-realtime-tools \
+    ros-${ROS_DISTRO}-ros2-control-test-assets \
+    ros-${ROS_DISTRO}-controller-manager \
+    ros-${ROS_DISTRO}-joint-state-publisher-gui \
+    ros-${ROS_DISTRO}-joint-state-publisher \
+    ros-${ROS_DISTRO}-control-msgs \
+    ros-${ROS_DISTRO}-geometry-msgs \
+    ros-${ROS_DISTRO}-sensor-msgs \
+    ros-${ROS_DISTRO}-gazebo-ros \
+    ros-${ROS_DISTRO}-control-toolbox \
+    ros-${ROS_DISTRO}-ackermann-msgs \
+    ros-${ROS_DISTRO}-ament-cmake \
+    ros-${ROS_DISTRO}-ament-cmake-clang-format \
+    ros-${ROS_DISTRO}-moveit \
+    ros-${ROS_DISTRO}-ros2-control \
+    ros-${ROS_DISTRO}-ros2-controllers \
+    ros-${ROS_DISTRO}-joint-state-broadcaster \
+    ros-${ROS_DISTRO}-ament-cmake-clang-tidy \
     libignition-gazebo6-dev \
     libpoco-dev \
     libeigen3-dev \
+    nano \
+    lsb-release \
+    wget \
+    gnupg \
     && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir ~/source_code
@@ -63,6 +69,14 @@ RUN cd ~/source_code && git clone https://github.com/frankaemika/libfranka.git \
     && cpack -G DEB \
     && sudo dpkg -i libfranka*.deb
 
+## Setup Ignition Gazebo Harmonic LTS until Sep. 2028
+RUN wget https://packages.osrfoundation.org/gazebo.gpg -O /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg
+RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/gazebo-stable.list > /dev/null
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    gz-harmonic \
+    ros-${ROS_DISTRO}-ros-ign-bridge
+    
 RUN addgroup realtime
 RUN usermod -a -G realtime $USERNAME
 
@@ -70,6 +84,10 @@ ENV XDG_RUNTIME_DIR=/run/user/"${USER_UID}"
 
 # set the default user to the newly created user
 USER $USERNAME
+CMD ["/bin/bash"]
+
 
 RUN echo "source /ros_entrypoint.sh" >>~/.bashrc
 RUN echo "export ROS_DOMAIN_ID=100" >>~/.bashrc
+RUN echo "export RCUTILS_COLORIZED_OUTPUT=1" >>~/.bashrc 
+RUN echo "export LC_NUMERIC=en_US.UTF-8" >>~/.bashrc 

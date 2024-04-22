@@ -6,6 +6,7 @@
 	"service": "ros2_control",
 	"workspaceFolder": "/workspaces",
 	"remoteUser": "user",
+	"postCreateCommand": "sudo chown -R user:user /workspaces",
 	"customizations": {
 		"vscode": {
 			"extensions": [
@@ -17,7 +18,9 @@
 				"xaver.clang-format",
 				"josetr.cmake-language-support-vscode",
 				"twxs.cmake",
-				"cheshirekow.cmake-format"
+				"cheshirekow.cmake-format",
+				"ms-iot.vscode-ros",
+				"redhat.vscode-xml"
 			]
 		}
 	}
