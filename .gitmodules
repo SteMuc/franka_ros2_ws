@@ -2,3 +2,7 @@
 	path = src/dependencies/franka_ros2
 	url = https://github.com/frankaemika/franka_ros2.git
 	branch = humble
+[submodule "src/my_panda_robot"]
+	path = src/my_panda_robot
+	url = https://github.com/SteMuc/my_panda_robot.git
+	branch = master
