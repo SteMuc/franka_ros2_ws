@@ -48,6 +48,8 @@ RUN apt-get update && \
     ros-${ROS_DISTRO}-ros2-controllers \
     ros-${ROS_DISTRO}-joint-state-broadcaster \
     ros-${ROS_DISTRO}-ament-cmake-clang-tidy \
+    ros-${ROS_DISTRO}-ros-gz-sim \
+    ros-${ROS_DISTRO}-ign-ros2-control \
     libignition-gazebo6-dev \
     libpoco-dev \
     libeigen3-dev \
