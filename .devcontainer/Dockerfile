@@ -19,8 +19,10 @@ RUN groupadd --gid $USER_GID $USERNAME \
     && apt-get update \
     && apt-get install -y sudo \
     && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
-    && chmod 0440 /etc/sudoers.d/$USERNAME
-
+    && chmod 0440 /etc/sudoers.d/$USERNAME \
+    && apt-get install -y python3-pip \
+    && apt install -y python3-colcon* \
+    && pip3 install setuptools==58.2.
 ENV SHELL /bin/bash
 
 
@@ -54,6 +56,7 @@ RUN apt-get update && \
     libpoco-dev \
     libeigen3-dev \
     nano \
+    python3-colcon-common-extensions \
     lsb-release \
     wget \
     gnupg \
@@ -88,8 +91,8 @@ ENV XDG_RUNTIME_DIR=/run/user/"${USER_UID}"
 USER $USERNAME
 CMD ["/bin/bash"]
 
-
 RUN echo "source /ros_entrypoint.sh" >>~/.bashrc
+RUN echo "source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash" >>~/.bashrc
 RUN echo "export ROS_DOMAIN_ID=100" >>~/.bashrc
 RUN echo "export RCUTILS_COLORIZED_OUTPUT=1" >>~/.bashrc 
 RUN echo "export LC_NUMERIC=en_US.UTF-8" >>~/.bashrc 
